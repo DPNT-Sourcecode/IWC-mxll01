@@ -12,10 +12,10 @@ def test_enqueue_size_dequeue_flow() -> None:
 
 def test_legacy_rule_of_3() -> None:
     run_queue([
-        call_enqueue("companies_house", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
-        call_enqueue("bank_statements", 2, iso_ts(base="2025-10-20 12:00:00")).expect(1),
-        call_enqueue("id_verification", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
-        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
+        call_enqueue("companies_house", 1, iso_ts()).expect(1),
+        call_enqueue("bank_statements", 2, iso_ts()).expect(1),
+        call_enqueue("id_verification", 1, iso_ts()).expect(1),
+        call_enqueue("bank_statements", 1, iso_ts()).expect(1),
         call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("id_verification", 1),
         call_dequeue().expect("bank_statements", 1),
@@ -24,34 +24,35 @@ def test_legacy_rule_of_3() -> None:
 
 def test_legacy_timestamp_ordering() -> None:
     run_queue([
-        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:05:00")).expect(1),
-        call_enqueue("bank_statements", 2, iso_ts(base="2025-10-20 12:00:00")).expect(1),
+        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=5)).expect(1),
+        call_enqueue("bank_statements", 2, iso_ts()).expect(1),
         call_dequeue().expect("bank_statements", 2),
         call_dequeue().expect("bank_statements", 1),
     ])
 
 def test_legacy_dependency_resolution() -> None:
     run_queue([
-        call_enqueue("credit_check", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
+        call_enqueue("credit_check", 1, iso_ts()).expect(1),
         call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("credit_check)", 1),
     ])
 
 def test_legacy_deduplication() -> None:
     run_queue([
-        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
-        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:05:00")).expect(1),
-        call_enqueue("id_verification", 1, iso_ts(base="2025-10-20 12:05:00")).expect(1),
+        call_enqueue("bank_statements", 1, iso_ts()).expect(1),
+        call_enqueue("bank_statements", 1, iso_ts(delta_minutes=5)).expect(1),
+        call_enqueue("id_verification", 1, iso_ts(delta_minutes=5)).expect(1),
         call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("id_verification)", 1),
     ])
 
 def test_legacy_deprioritize_bank_statements() -> None:
     run_queue([
-        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
-        call_enqueue("id_verification", 1, iso_ts(base="2025-10-20 12:01:00")).expect(1),
-        call_enqueue("companies_house", 2, iso_ts(base="2025-10-20 12:02:00")).expect(1),
+        call_enqueue("bank_statements", 1, iso_ts()).expect(1),
+        call_enqueue("id_verification", 1, iso_ts(delta_minutes=1)).expect(1),
+        call_enqueue("companies_house", 2, iso_ts(delta_minutes=2)).expect(1),
         call_dequeue().expect("id_verification", 1),
         call_dequeue().expect("companies_house)", 2),
         call_dequeue().expect("bank_statements)", 1),
     ])
+
