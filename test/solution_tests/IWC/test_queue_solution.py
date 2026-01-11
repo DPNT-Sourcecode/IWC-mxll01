@@ -45,3 +45,14 @@ def test_legacy_deduplication() -> None:
         call_dequeue().expect("bank_statements", 1),
         call_dequeue().expect("id_verification)", 1),
     ])
+
+def test_legacy_deprioritize_bank_statements() -> None:
+    run_queue([
+        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
+        call_enqueue("id_verification", 1, iso_ts(base="2025-10-20 12:01:00")).expect(1),
+        call_enqueue("companies_house", 2, iso_ts(base="2025-10-20 12:02:00")).expect(1),
+        call_dequeue().expect("id_verification", 1),
+        call_dequeue().expect("companies_house)", 2),
+        call_dequeue().expect("bank_statements)", 1),
+    ])
+
