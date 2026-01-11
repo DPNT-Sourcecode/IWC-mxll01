@@ -126,10 +126,7 @@ class Queue:
             priority_timestamps[user_id] = earliest_timestamp
             task_count[user_id] = len(user_tasks)
 
-        oldest_timestamp = None
-        for task in self._queue:
-            if oldest_timestamp is None or self._timestamp_for_task(task) > oldest_timestamp:
-                oldest_timestamp = self._timestamp_for_task(task)
+        oldest_timestamp = max(self._timestamp_for_task(task) for task in self._queue)
 
         for task in self._queue:
             # if oldest_timestamp is None or self._timestamp_for_task(task) > oldest_timestamp:
@@ -148,7 +145,7 @@ class Queue:
                 if task_count[task.user_id] >= 3:
                     metadata["group_earliest_timestamp"] = priority_timestamps[task.user_id]
                     metadata["priority"] = Priority.HIGH
-                elif is_bank_statements and oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds >= 300:
+                elif is_bank_statements and oldest_timestamp is not None and (oldest_timestamp - self._timestamp_for_task(task)).seconds >= 300:
                     metadata["priority"] = Priority.HIGH
                 else:
                     metadata["priority"] = Priority.NORMAL
@@ -285,10 +282,3 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
-
-
-
-
-
-
-
