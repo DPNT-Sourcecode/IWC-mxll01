@@ -63,3 +63,14 @@ def test_legacy_age() -> None:
         call_age().expect(300),
     ])
 
+def test_legacy_time_sensitive_bank_statements() -> None:
+    run_queue([
+        call_enqueue("id_verification", 1, iso_ts()).expect(1),
+        call_enqueue("bank_statements", 2, iso_ts(delta_minutes=1)).expect(2),
+        call_enqueue("companies_house", 3, iso_ts(delta_minutes=7)).expect(3),
+        call_dequeue().expect("id_verification", 1),
+        call_dequeue().expect("bank_statements", 2),
+        call_dequeue().expect("companies_house", 3),
+    ])
+
+
