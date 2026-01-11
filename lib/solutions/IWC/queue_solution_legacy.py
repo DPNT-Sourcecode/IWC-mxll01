@@ -160,7 +160,7 @@ class Queue:
 
             return (priority, group_timestamp, task_timestamp)
 
-        self._queue.sort(key=_sort_key(task))
+        self._queue.sort(key=_sort_key)
 
         task = self._queue.pop(0)
         return TaskDispatch(
@@ -263,4 +263,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
