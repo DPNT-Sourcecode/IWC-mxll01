@@ -157,7 +157,8 @@ class Queue:
             user_task_count = task_count[task.user_id]
 
             if is_bank_statements:
-                return (priority, group_timestamp, MAX_TIMESTAMP)
+                if oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds < 300:
+                    return (priority, group_timestamp, MAX_TIMESTAMP)
 
             return (priority, group_timestamp, task_timestamp)
 
@@ -274,4 +275,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
