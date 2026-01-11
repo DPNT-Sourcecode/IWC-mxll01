@@ -126,7 +126,10 @@ class Queue:
             priority_timestamps[user_id] = earliest_timestamp
             task_count[user_id] = len(user_tasks)
 
+        oldest_timestamp = None
         for task in self._queue:
+            if oldest_timestamp is None or self._timestamp_for_task(task) > oldest_timestamp:
+                oldest_timestamp = self._timestamp_for_task(task)
             metadata = task.metadata
             current_earliest = metadata.get("group_earliest_timestamp", MAX_TIMESTAMP)
             raw_priority = metadata.get("priority")
@@ -271,3 +274,4 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
