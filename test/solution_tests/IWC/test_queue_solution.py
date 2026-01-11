@@ -84,4 +84,3 @@ def test_legacy_time_sensitive_bank_statements_r5_s6() -> None:
         # call_dequeue().expect("id_verification", 2),
         call_dequeue().expect("bank_statements", 2),
     ])
-
