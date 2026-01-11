@@ -180,9 +180,9 @@ class Queue:
                 min_ts = task_ts
             if max_ts is None or max_ts < task_ts:
                 max_ts = task_ts
-            if min_ts is not None and max_ts is not None:
-                return (max_ts - min_ts).seconds
-            return 0
+        if min_ts is not None and max_ts is not None:
+            return (max_ts - min_ts).seconds
+        return 0
 
     def purge(self):
         self._queue.clear()
@@ -271,4 +271,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 

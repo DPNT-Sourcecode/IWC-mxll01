@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .utils import call_dequeue, call_enqueue, call_size, iso_ts, run_queue
+from .utils import call_age, call_dequeue, call_enqueue, call_size, iso_ts, run_queue
 
 
 def test_enqueue_size_dequeue_flow() -> None:
@@ -55,3 +55,11 @@ def test_legacy_deprioritize_bank_statements() -> None:
         call_dequeue().expect("companies_house", 2),
         call_dequeue().expect("bank_statements", 1),
     ])
+
+def test_legacy_age() -> None:
+    run_queue([
+        call_enqueue("id_verification", 1, iso_ts()).expect(1),
+        call_enqueue("id_verification", 2, iso_ts(delta_minutes=5)).expect(2),
+        call_age().expect(300),
+    ])
+
