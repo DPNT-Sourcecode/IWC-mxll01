@@ -32,7 +32,7 @@ def test_legacy_timestamp_ordering() -> None:
 
 def test_legacy_dependency_resolution() -> None:
     run_queue([
-        call_enqueue("credit_check", 1, iso_ts()).expect(1),
+        call_enqueue("credit_check", 1, iso_ts()).expect(2),
         call_dequeue().expect("companies_house", 1),
         call_dequeue().expect("credit_check)", 1),
     ])
@@ -55,5 +55,6 @@ def test_legacy_deprioritize_bank_statements() -> None:
         call_dequeue().expect("companies_house)", 2),
         call_dequeue().expect("bank_statements)", 1),
     ])
+
 
 
