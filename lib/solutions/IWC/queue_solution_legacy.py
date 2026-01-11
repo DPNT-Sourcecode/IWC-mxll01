@@ -172,7 +172,17 @@ class Queue:
 
     @property
     def age(self):
-        return 0
+        min_ts = None
+        max_ts = None
+        for task in self._queue:
+            task_ts = self._timestamp_for_task(task)
+            if min_ts is None or min_ts > task_ts:
+                min_ts = task_ts
+            if max_ts is None or max_ts < task_ts:
+                max_ts = task_ts
+            if min_ts is not None and max_ts is not None:
+                return (max_ts - min_ts).seconds
+            return 0
 
     def purge(self):
         self._queue.clear()
@@ -261,3 +271,4 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
