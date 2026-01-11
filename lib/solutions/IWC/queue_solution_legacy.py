@@ -154,7 +154,6 @@ class Queue:
             group_timestamp = self._earliest_group_timestamp_for_task(task)
             task_timestamp = self._timestamp_for_task(task)
             is_bank_statements = task.provider == "bank_statements"
-            user_task_count = task_count[task.user_id]
 
             if is_bank_statements:
                 if oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds < 300:
@@ -275,3 +274,4 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
