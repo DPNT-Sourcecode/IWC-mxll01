@@ -164,7 +164,8 @@ class Queue:
             task_timestamp = self._timestamp_for_task(task)
 
             if has_old_bank_statements:
-                return (_as_timestamp(group_timestamp), task_timestamp, priority)
+                if (oldest_timestamp - task_timestamp).seconds < 300:
+                    return (_as_timestamp(group_timestamp), task_timestamp, priority)
 
             bank_priority = priority
             if task.provider == "bank_statements":
@@ -307,4 +308,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
