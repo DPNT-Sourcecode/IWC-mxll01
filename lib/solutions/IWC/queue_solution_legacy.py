@@ -101,7 +101,7 @@ class Queue:
             existing_idx = None
             existing_timestamp = None
             for i, existing_task in enumerate(self._queue):
-                if task.provider == task.provider and task.user_id == task.user_id:
+                if existing_task.provider == task.provider and existing_task.user_id == task.user_id:
                     existing_idx = i
                     existing_timestamp = self._timestamp_for_task(existing_task)
                     break
@@ -111,7 +111,6 @@ class Queue:
                     self._queue[i] = task
             else:
                 self._queue.append(task)
-                self._tasks.add((task.provider, task.user_id))
         return self.size
 
     def dequeue(self):
@@ -256,3 +255,4 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
