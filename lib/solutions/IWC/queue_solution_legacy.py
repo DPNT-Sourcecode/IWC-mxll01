@@ -50,6 +50,7 @@ REGISTERED_PROVIDERS: list[Provider] = [
 class Queue:
     def __init__(self):
         self._queue = []
+        self._tasks = set()
 
     def _collect_dependencies(self, task: TaskSubmission) -> list[TaskSubmission]:
         provider = next((p for p in REGISTERED_PROVIDERS if p.name == task.provider), None)
@@ -97,7 +98,8 @@ class Queue:
             metadata = task.metadata
             metadata.setdefault("priority", Priority.NORMAL)
             metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
-            #self._queue.append(task)
+            self._queue.append(task)
+            self._tasks.add((task.provider, task.user_id))
         return self.size
 
     def dequeue(self):
@@ -242,4 +244,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
