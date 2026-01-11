@@ -47,6 +47,14 @@ REGISTERED_PROVIDERS: list[Provider] = [
     ID_VERIFICATION_PROVIDER,
 ]
 
+def _as_timestamp(timestamp):
+    if isinstance(timestamp, datetime):
+        return timestamp.replace(tzinfo=None)
+    if isinstance(timestamp, str):
+        return datetime.fromisoformat(timestamp).replace(tzinfo=None)
+    return timestamp
+
+
 class Queue:
     def __init__(self):
         self._queue = []
@@ -84,11 +92,12 @@ class Queue:
     @staticmethod
     def _timestamp_for_task(task):
         timestamp = task.timestamp
-        if isinstance(timestamp, datetime):
-            return timestamp.replace(tzinfo=None)
-        if isinstance(timestamp, str):
-            return datetime.fromisoformat(timestamp).replace(tzinfo=None)
-        return timestamp
+        return _as_timestamp(timestamp)
+        # if isinstance(timestamp, datetime):
+        #     return timestamp.replace(tzinfo=None)
+        # if isinstance(timestamp, str):
+        #     return datetime.fromisoformat(timestamp).replace(tzinfo=None)
+        # return timestamp
 
     def enqueue(self, item: TaskSubmission) -> int:
         tasks = [*self._collect_dependencies(item), item]
@@ -158,11 +167,11 @@ class Queue:
             bank_priority = priority
             if task.provider == "bank_statements":
                 if oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds < 300:
-                    return (bank_priority, group_timestamp, MAX_TIMESTAMP)
+                    return (bank_priority, _as_timestamp(group_timestamp), MAX_TIMESTAMP)
                 else:
                     bank_priority = Priority.HIGH if priority is Priority.NORMAL else priority
             
-            return (bank_priority, group_timestamp, task_timestamp)
+            return (bank_priority, _as_timestamp(group_timestamp), task_timestamp)
 
         self._queue.sort(key=_sort_key)
 
@@ -277,3 +286,4 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
