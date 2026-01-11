@@ -147,7 +147,6 @@ class Queue:
             except (TypeError, ValueError):
                 priority_level = None
 
-            is_bank_statements = task.provider == "bank_statements"
             if priority_level is None or priority_level == Priority.NORMAL:
                 metadata["group_earliest_timestamp"] = MAX_TIMESTAMP
                 if task_count[task.user_id] >= 3:
@@ -169,7 +168,7 @@ class Queue:
                 if oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds < 300:
                     return (bank_priority, _as_timestamp(group_timestamp), MAX_TIMESTAMP)
                 else:
-                    bank_priority = Priority.HIGH if priority is Priority.NORMAL else priority
+                    bank_priority = Priority.HIGH if priority is not Priority.HIGH else priority
             
             return (bank_priority, _as_timestamp(group_timestamp), task_timestamp)
 
@@ -286,4 +285,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
