@@ -9,3 +9,11 @@ def test_enqueue_size_dequeue_flow() -> None:
         call_size().expect(1),
         call_dequeue().expect("companies_house", 1),
     ])
+
+def test_legacy_rule_of_3() -> None:
+    run_queue([
+        call_enqueue("companies_house", 1, iso_ts(base="2025-10-20 12:00:00")).expect(1),
+        call_size().expect(1),
+        call_dequeue().expect("legacy_rule_of_3", 42),
+    ])
+
