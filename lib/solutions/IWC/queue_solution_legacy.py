@@ -94,24 +94,24 @@ class Queue:
         tasks = [*self._collect_dependencies(item), item]
 
         for task in tasks:
-            existing_idx = None
-            existing_task = None
-            for i, task in enumerate(self._queue):
-                if task.provider == task.provider and task.user_id == task.user_id:
-                    existing_idx = i
-                    existing_task = task
-                    break
-
-            if existing_task is not None:
-                existing_timestamp = self._timestamp_for_task(existing_task)
-        
             metadata = task.metadata
             metadata.setdefault("priority", Priority.NORMAL)
             metadata.setdefault("group_earliest_timestamp", MAX_TIMESTAMP)
-            existing_task = self._queue
-            existing_timestamp = self._queue
-            self._queue.append(task)
-            self._tasks.add((task.provider, task.user_id))
+
+            existing_idx = None
+            existing_timestamp = None
+            for i, existing_task in enumerate(self._queue):
+                if task.provider == task.provider and task.user_id == task.user_id:
+                    existing_idx = i
+                    existing_timestamp = self._timestamp_for_task(existing_task)
+                    break
+
+            if existing_idx is not None:
+                if self._timestamp_for_task(task) < existing_timestamp:
+                    self._queue[i] = task
+            else:
+                self._queue.append(task)
+                self._tasks.add((task.provider, task.user_id))
         return self.size
 
     def dequeue(self):
@@ -256,4 +256,5 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
