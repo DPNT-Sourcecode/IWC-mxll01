@@ -154,12 +154,12 @@ class Queue:
             user_task_count = task_count[task.user_id]
             if is_bank_statements and user_task_count < 3:
                 return (Priority.NORMAL + 1, MAX_TIMESTAMP, MAX_TIMESTAMP)
-            
+
             if is_bank_statements and user_task_count >= 3:
                 return (priority, group_timestamp, MAX_TIMESTAMP)
-            
+
             return (priority, group_timestamp, task_timestamp)
-        
+
         self._queue.sort(_sort_key(task))
 
         task = self._queue.pop(0)
@@ -263,4 +263,3 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
-
