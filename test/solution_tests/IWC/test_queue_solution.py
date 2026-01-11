@@ -22,5 +22,14 @@ def test_legacy_rule_of_3() -> None:
         call_dequeue().expect("bank_statements", 2),
     ])
 
+def test_legacy_timestamp_ordering() -> None:
+    run_queue([
+        call_enqueue("bank_statements", 1, iso_ts(base="2025-10-20 12:05:00")).expect(1),
+        call_enqueue("bank_statements", 2, iso_ts(base="2025-10-20 12:00:00")).expect(1),
+        call_dequeue().expect("bank_statements", 2),
+        call_dequeue().expect("bank_statements", 1),
+    ])
+
+
 
 
