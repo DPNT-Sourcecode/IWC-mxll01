@@ -155,13 +155,14 @@ class Queue:
             task_timestamp = self._timestamp_for_task(task)
             is_bank_statements = task.provider == "bank_statements"
 
+            bank_priority = 1
             if is_bank_statements:
                 if oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds < 300:
-                    return (1, priority, group_timestamp, MAX_TIMESTAMP)
+                    return (priority, group_timestamp, MAX_TIMESTAMP, 1)
+                else:
+                    bank_priority = 0
 
-            bank_priority = 0 if is_bank_statements and oldest_timestamp is not None and (oldest_timestamp - task_timestamp).seconds >= 300 else 1
-
-            return (bank_priority, priority, group_timestamp, task_timestamp)
+            return (priority, group_timestamp, task_timestamp, bank_priority)
 
         self._queue.sort(key=_sort_key)
 
@@ -276,6 +277,7 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
 
 
