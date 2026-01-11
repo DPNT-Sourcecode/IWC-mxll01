@@ -161,7 +161,7 @@ class Queue:
                     return (priority, group_timestamp, MAX_TIMESTAMP, 1)
                 else:
                     bank_priority = 0
-                    priority = 0
+                    #priority = 0
 
             return (priority, group_timestamp, task_timestamp, bank_priority)
 
@@ -278,6 +278,7 @@ async def queue_worker():
         logger.info(f"Finished task: {task}")
 ```
 """
+
 
 
 
